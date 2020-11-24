@@ -1,0 +1,46 @@
+
+# Descriptive Analysis of the Data
+
+_**The purpose of the descriptive analysis is to get a better understanding of the raw data before the actual regression analysis is started. In general, this means determining how clean the data is, its size and scale, and take note of possible patterns that may impact the regression analysis.**_
+
+
+```{r}
+
+data <- read.csv("fish-market-data.csv", fileEncoding="UTF-8-BOM")
+
+```
+
+### Structure
+
+```{r}
+
+str(data)
+
+```
+
+There are 7 total variables, 6 of which are numbers and one of which is an indicator variable. The data set is small enough that checking the structure for missing values, wrong types, or other inconsistencies, manually is fine. None of these issues are present, therefore there is no need to clean the raw data.
+
+### Indicator Variables
+
+```{r}
+
+barplot(table(data$Species))
+
+
+```
+
+There are more Perch samples than any other type of fish, while there are very few Whitefish samples.
+
+### Summary Statistics
+
+```{r}
+
+summary(data)
+boxplot(data$Weight, data$Length1, data$Length2, data$Length3, data$Height, data$Width)
+boxplot(data$Length1, data$Length2, data$Length3, data$Height, data$Width)
+
+data
+
+```
+
+  
