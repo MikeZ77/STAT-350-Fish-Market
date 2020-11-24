@@ -1,7 +1,7 @@
 
 # Descriptive Analysis of the Data
 
-_**The purpose of the descriptive analysis is to get a better understanding of the raw data before the actual regression analysis is started. In general, this means determining how clean the data is, its size and scale, and take note of possible patterns that may impact the regression analysis.**_
+_**The purpose of the descriptive analysis is to get a better understanding of the raw data before the actual regression analysis is started. In general, this means determining how clean the data is, its size and scale, and take note of any possible patterns or inconsistencies that may impact the regression analysis.**_
 
 
 ```{r}
@@ -18,9 +18,9 @@ str(data)
 
 ```
 
-There are 7 total variables, 6 of which are numbers and one of which is an indicator variable. The data set is small enough that checking the structure for missing values, wrong types, or other inconsistencies, manually is fine. None of these issues are present, therefore there is no need to clean the raw data.
+There are 7 total variables, 6 of which are numbers and one of which is an indicator variable.
 
-### Indicator Variables
+### Qualitative Variables
 
 ```{r}
 
@@ -29,7 +29,7 @@ barplot(table(data$Species))
 
 ```
 
-There are more Perch samples than any other type of fish, while there are very few Whitefish samples.
+There are more Perch samples than any other type of fish, while there are very few Whitefish samples. 
 
 ### Summary Statistics
 
@@ -39,8 +39,32 @@ summary(data)
 boxplot(data$Weight, data$Length1, data$Length2, data$Length3, data$Height, data$Width)
 boxplot(data$Length1, data$Length2, data$Length3, data$Height, data$Width)
 
-data
 
 ```
+
+Clearly weight is in a different unit than the other predictors. It will make sense to scale the data for comparability of the regression coefficients. If Length 1 2 and 3 are the same measurement units as Width and Height, then this group may be measuring the length of the fish in slightly different ways. Weight seems to be highly variable and heavily skewed to the right with large outliers 
+
+
+### Summary Statistics
+
+```{r}
+
+
+pairs(data[,c(2:7)])
+
+```
+
+Looking at the pairs plot, there appears to be some challenges ahead. Assuming weight is the response variable variable, it does appear to have a relation with every other predictor. However, the best relationship does not appear to be linear. This means that the data may have to be transformed to reflect a linear relationship  between the response and predictors. Length 1, Length 2, and Length 3 all appear to be impacted by multicollinearity. Width and Height may have a the same issue, but have different 'groups' of correlation which may be explained by the categorical variable Species. 
+
+
+
+
+
+
+
+
+
+
+
 
   

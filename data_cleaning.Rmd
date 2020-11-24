@@ -1,0 +1,56 @@
+# Data Cleaning
+
+```{r}
+
+data <- read.csv("fish-market-data.csv", fileEncoding="UTF-8-BOM")
+
+```
+
+Manually browsing the data, it seems pretty clean. Some issues came up in the descriptive analysis though. In the summary data, one or more observations have zero weight.
+ 
+ ```{r}
+ 
+ data[data$Weight == 0, ]
+ 
+  ```
+  
+  Clearly, a fish cannot have zero Wight. Since its other attributes seem fine, I don't think removing the observation is necessary. A better option would be to interpolate for Wight given that the Species type is a Roach. Weight has a similar relationship to all other variables, so ordering by one of these and using it as a basis for linear interpolation should be fine. Even though we see currently see that the relationship is not quite linear, interpolating in this way should be fine and not significantly impact the model results.
+  
+ ```{r}
+ 
+roach_data <- data[data$Species == 'Roach', ]
+rownames(roach_data) <- 1:nrow(roach_data)
+zero_index <- as.numeric(rownames(roach_data[roach_data$Weight == 0, ]))
+pred_val <- roach_data[c(zero_index), 3]
+
+roach_data <- roach_data[-c(zero_index),]
+roach_lm <- lm(Weight ~ Length1, data = roach_data)
+
+inter_value <- predict(roach_lm, data.frame(Length1 = pred_val))
+data[data$Weight == 0, 2] <- inter_value
+
+  ```
+  
+From the descriptive analysis it was also evident that the data is in different units. To make the regression analysis simpler a unit length scaling can be performed.
+
+ ```{r}
+ 
+
+sWeight <- sd(data$Weight)
+sLength1 <- sd(data$Length1)
+sLength2 <- sd(data$Length2)
+sLength3 <- sd(data$Length3)
+sHeight <- sd(data$Height)
+sWidth <- sd(data$Width)
+
+data$Weight <- (data$Weight - mean(data$Weight)) / sWeight
+data$Length1 <- (data$Length1 - mean(data$Length1)) / sLength1
+data$Length2 <- (data$Length2 - mean(data$Length2)) / sLength2
+data$Length3 <- (data$Length3 - mean(data$Length3)) / sLength3
+data$Height <- (data$Height - mean(data$Height)) / sHeight
+data$Width <- (data$Width - mean(data$Width)) / sWidth
+
+data
+  ```
+
+
