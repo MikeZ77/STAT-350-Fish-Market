@@ -31,26 +31,39 @@ data[data$Weight == 0, 2] <- inter_value
 
   ```
   
-From the descriptive analysis it was also evident that the data is in different units. To make the regression analysis simpler a unit length scaling can be performed.
+From the descriptive analysis it was also evident that the data is in different units. To make the regression analysis simpler a unit normal scaling can be performed.
 
  ```{r}
  
+scaled_data <- as.data.frame(scale(data[,-1], center = TRUE, scale = TRUE))
 
-sWeight <- sd(data$Weight)
-sLength1 <- sd(data$Length1)
-sLength2 <- sd(data$Length2)
-sLength3 <- sd(data$Length3)
-sHeight <- sd(data$Height)
-sWidth <- sd(data$Width)
+```
 
-data$Weight <- (data$Weight - mean(data$Weight)) / sWeight
-data$Length1 <- (data$Length1 - mean(data$Length1)) / sLength1
-data$Length2 <- (data$Length2 - mean(data$Length2)) / sLength2
-data$Length3 <- (data$Length3 - mean(data$Length3)) / sLength3
-data$Height <- (data$Height - mean(data$Height)) / sHeight
-data$Width <- (data$Width - mean(data$Width)) / sWidth
+This is also a good time to setup our indicator variable species.
 
-data
-  ```
+ ```{r}
+ 
+indicator_data <- fastDummies::dummy_cols(data['Species'], select_columns = "Species")
+indicator_data$Species <- NULL
+
+```
+
+Combine the scaled and indicator data.
+
+ ```{r}
+ 
+data <- data.frame(indicator_data, scaled_data)
+
+```
+
+Output the new dataframe as a .csv so it can be used in the regression analysis. It may not be necessary to use Species in the analysis of risiduals and checking for collinearity, so scaled_data will also be saved.
+
+ ```{r}
+ 
+write.csv(data, 'cleaned_data.csv', row.names = FALSE)
+write.csv(scaled_data, 'cleaned_data_scaled_only.csv', row.names = FALSE)
+
+```
+
 
 

@@ -1,0 +1,51 @@
+# Checking for Multicollinearity 
+
+_**Multicollinearity  is defined as linear or near linear dependence between predictors. This can impact the usefulness of the linear regression model because it reduces or undermines the statistical significance of the predictor.**_
+
+```{r}
+library(faraway)
+data <- read.csv("cleaned_data_scaled_only.csv", fileEncoding="UTF-8-BOM")
+data1 <- read.csv("cleaned_data.csv", fileEncoding="UTF-8-BOM")
+
+```
+
+From the descriptive analysis (pairs plot), we saw that the predictors Length1, Length2, and Length3 were all highly correlated. Height and Width also looked highly correlated with with he other predictors as well, but formed groups of linear relationships. We can quantify the multicollinearty present in the model using the VIF (Variance Inflation Factor). But first, lets view a summary of our initial model.
+
+```{r}
+
+model <- lm(Weight ~ Length1 + Length2 + Length3 + Height + Width - 1, data = data)
+summary(model)
+
+```
+
+Notice that the regression coefficients for Length2 and Length3 are negative. This goes against our intuition, since it seems reasonable to think that the greater the length of the fish, the more it is going to weigh (regardless of what is actually being measured). Also note that these predictors are insignificant at $\alpha = 0.05$. These issues both strongly indicate that multicollinearity is present.
+
+```{r}
+
+vif(lm(Weight ~ Length1 + Length2 + Length3 + Height + Width, data = data))
+
+```
+
+The VIF for the predictors shows that Length1, Length2, and Length3 are a major concern. They are almost completely linearly dependent. This makes sense given that these measurements are most likely measuring the length of the fish in three, almost identical ways. For this reason, we are justified in only keeping one of the lengths. 
+
+```{r}
+
+model <- lm(Weight ~ Length1 + Height + Width - 1, data = data)
+summary(model)
+
+vif(lm(Weight ~ Length1 + Height + Width, data = data))
+
+```
+
+We can see that removing these predictors has fixed the issues multicollinearity was causing. The estimated regression coefficients are now positive and they have a significant linear relationship with the response.
+
+```{r}
+
+data$Length2 <- NULL
+data$Length3 <- NULL
+data1$Length2 <- NULL
+data1$Length3 <- NULL
+
+write.csv(data, 'cleaned_data_scaled_only.csv', row.names = FALSE)
+write.csv(data1, 'cleaned_data.csv', row.names = FALSE)
+```
