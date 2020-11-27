@@ -1,11 +1,16 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Checking for Multicollinearity 
 
 _**Multicollinearity  is defined as linear or near linear dependence between predictors. This can impact the usefulness of the linear regression model because it reduces or undermines the statistical significance of the predictor.**_
 
 ```{r}
 library(faraway)
-data <- read.csv("cleaned_data_scaled_only.csv", fileEncoding="UTF-8-BOM")
-data1 <- read.csv("cleaned_data.csv", fileEncoding="UTF-8-BOM")
+data <- read.csv("cleaned_data_scaled_only_2.csv", fileEncoding="UTF-8-BOM")
+data1 <- read.csv("cleaned_data_2.csv", fileEncoding="UTF-8-BOM")
 
 ```
 
@@ -46,6 +51,6 @@ data$Length3 <- NULL
 data1$Length2 <- NULL
 data1$Length3 <- NULL
 
-write.csv(data, 'cleaned_data_scaled_only.csv', row.names = FALSE)
-write.csv(data1, 'cleaned_data.csv', row.names = FALSE)
+write.csv(data, 'cleaned_data_scaled_only_3.csv', row.names = FALSE)
+write.csv(data1, 'cleaned_data_3.csv', row.names = FALSE)
 ```

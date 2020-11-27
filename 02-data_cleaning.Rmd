@@ -1,3 +1,9 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
 # Data Cleaning
 
 ```{r}
@@ -56,12 +62,14 @@ data <- data.frame(indicator_data, scaled_data)
 
 ```
 
+# Unique Data Point Introduction 
+
 Output the new dataframe as a .csv so it can be used in the regression analysis. It may not be necessary to use Species in the analysis of risiduals and checking for collinearity, so scaled_data will also be saved.
 
  ```{r}
  
-write.csv(data, 'cleaned_data.csv', row.names = FALSE)
-write.csv(scaled_data, 'cleaned_data_scaled_only.csv', row.names = FALSE)
+write.csv(data, 'cleaned_data_2.csv', row.names = FALSE)
+write.csv(scaled_data, 'cleaned_data_scaled_only_2.csv', row.names = FALSE)
 
 ```
 
