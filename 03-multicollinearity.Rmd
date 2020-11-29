@@ -9,8 +9,9 @@ _**Multicollinearity  is defined as linear or near linear dependence between pre
 
 ```{r}
 library(faraway)
-data <- read.csv("cleaned_data_scaled_only_2.csv", fileEncoding="UTF-8-BOM")
-data1 <- read.csv("cleaned_data_2.csv", fileEncoding="UTF-8-BOM")
+
+data <- read.csv("cleaned_data_2.csv", fileEncoding="UTF-8-BOM")
+data1 <- read.csv("cleaned_data_scaled_only_2.csv", fileEncoding="UTF-8-BOM")
 
 ```
 
@@ -18,16 +19,17 @@ From the descriptive analysis (pairs plot), we saw that the predictors Length1, 
 
 ```{r}
 
-model <- lm(Weight ~ Length1 + Length2 + Length3 + Height + Width - 1, data = data)
+
+model <- lm(Weight ~ . - 1, data = data)
 summary(model)
 
 ```
 
-Notice that the regression coefficients for Length2 and Length3 are negative. This goes against our intuition, since it seems reasonable to think that the greater the length of the fish, the more it is going to weigh (regardless of what is actually being measured). Also note that these predictors are insignificant at $\alpha = 0.05$. These issues both strongly indicate that multicollinearity is present.
+Notice that the regression coefficients for Length1 is negative. This goes against our intuition, since it seems reasonable to think that the greater the length of the fish, the more it is going to weigh (regardless of what is actually being measured). Also note that these predictors do not have great significance. These issues both strongly indicate that multicollinearity is present.
 
 ```{r}
 
-vif(lm(Weight ~ Length1 + Length2 + Length3 + Height + Width, data = data))
+vif(model)
 
 ```
 
@@ -35,22 +37,23 @@ The VIF for the predictors shows that Length1, Length2, and Length3 are a major 
 
 ```{r}
 
-model <- lm(Weight ~ Length1 + Height + Width - 1, data = data)
+data$Length2 = NULL
+data$Length3 = NULL
+model <- lm(Weight ~ . - 1, data = data)
 summary(model)
 
-vif(lm(Weight ~ Length1 + Height + Width, data = data))
+vif(model)
 
 ```
 
-We can see that removing these predictors has fixed the issues multicollinearity was causing. The estimated regression coefficients are now positive and they have a significant linear relationship with the response.
+We can see that removing these predictors has fixed the major issues multicollinearity was causing. The estimated regression coefficient for Length1 is now positive and has a significant linear relationship with the response. Note that Length1 and Width still have high VIF (Large VIF). This is likely due to some interaction with the indicator variables. Since Length1 and Width appear to be key variables, they can be left in for now. Hopefully after the model selection process is complete, the VIF's are more reasonable.
+
 
 ```{r}
 
-data$Length2 <- NULL
-data$Length3 <- NULL
 data1$Length2 <- NULL
 data1$Length3 <- NULL
 
-write.csv(data, 'cleaned_data_scaled_only_3.csv', row.names = FALSE)
-write.csv(data1, 'cleaned_data_3.csv', row.names = FALSE)
+write.csv(data, 'cleaned_data_3.csv', row.names = FALSE)
+write.csv(data1, 'cleaned_data_scaled_only_3.csv', row.names = FALSE)
 ```

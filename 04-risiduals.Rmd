@@ -14,7 +14,7 @@ _**Five important assumptions need to hold so that the regression model can be u
 5. The errors are normally distributed.
 
 ```{r}
-data <- read.csv("cleaned_data_scaled_only_3.csv", fileEncoding="UTF-8-BOM")
+data <- read.csv("cleaned_data_3.csv", fileEncoding="UTF-8-BOM")
 
 ```
 
@@ -22,36 +22,46 @@ Lets use the risidual plots using standardized residuals so that we can compare 
 
 ```{r}
 
-model <- lm(Weight ~ Length1 + Height + Width - 1, data = data)
-  
-  par(mfrow = c(2, 2))
-  plot(model)
+model <- lm(Weight ~ . - 1, data = data)
+
+par(mfrow = c(2, 2))
+plot(model)
 
 ```
 
 ## Risiduals vs Fitted
 
-Here, assumption 1. is violated (we want to see a linear pattern between the Risiduals and Fitted values). This is not surprising since we observed a non linear pattern between the predictors and response in the pairs plot.
+Here, assumption **1. The relationship between the response y and the regression is linear** is violated (we want to see a linear pattern between the Risiduals and Fitted values). This is not surprising since we observed a non linear pattern between the predictors and response in the pairs plot.
 
 ```{r}
 
-model_transformed <- lm(sqrt(Weight) ~ Length1 + Height + Width - 1, data = data)
-  
+model_transformed <- lm(sqrt(Weight) ~ . - 1, data = data)
+
 plot(model_transformed, which = 1)
 
 ```
 
-Taking the square root of the response seems to produce the best result compared to other transformations of the response like ln(). Drawing a horizontal line at 0 seems reasonable. This satisfies 1. The relationship between the response y and the regression is linear. To confirm that we now have an improved linear relationship, we can compare the $R^{2}$ of the model.
+Taking the square root of the response seems to produce the best result compared to other transformations of the response like the natural logarithm. Drawing a horizontal line at 0 seems reasonable. This satisfies 1. The relationship between the response y and the regression is linear. To confirm that we now have an improved linear relationship, we can compare the $R^{2}$ of the model.
 
 ```{r}
 
-model <- lm(Weight ~ Length1 + Height + Width - 1, data = data)
+model <- lm(Weight ~ . - 1, data = data)
 summary(model)
 summary(model_transformed)
 
 ```
 
-Performing this transformation has significantly improved the $R^{2}$ of the model from `r {summary(model)$r.squared}` to `r {summary(model_transformed)$r.squared}`.
+Performing this transformation has significantly improved the $R^{2}$ of the model from `r {summary(model)$r.squared}` to `r {summary(model_transformed)$r.squared}`. Note that after the transformation we get NA values for Species_Parkki, Species_Roach, and Species_Smelt. Given the $R^{2}$ value after the transformation, it is the case that these variables are predicted perfectly by another (co-linear), and as a result add no value to the model. At this stage these predictors can be removed.
+
+```{r}
+
+data$Species_Parkki <- NULL
+data$Species_Roach <- NULL
+data$Species_Smelt <- NULL
+
+```
+
+Overall, we can see that **1. The relationship between the response y and the regression is linear** and **2. The error term $\epsilon$ has zero mean.** have been satisfied.
 
 ## Normal Q-Q
 
@@ -61,29 +71,24 @@ plot(model_transformed, which = 2)
 
 ```
 
-<!-- ## 1. The relationship between the response y and the regression is linear -->
+The normality assumption is is adequately met after the transformation. That is **5. The errors are normally distributed**. Previously, you can see that the data was not normal and havily skewed to the right.
 
-<!-- Lets plot each predictor separately to determine the relationship and transform it to a linear relationship if necessary. -->
+## Scale-Location
 
-<!-- ```{r} -->
-<!-- par(mfrow=c(2,2)) -->
-<!-- plot(data$Length1,data$Weight) -->
-<!-- plot(data$Width,data$Weight) -->
-<!-- plot(data$Height,data$Weight) -->
+```{r}
 
-<!-- ``` -->
+plot(model_transformed, which = 3)
 
-<!-- All predictors do not have a linear relationship, and all seem to have more of an exponential fit. It makes sense to try an linearize the model using a ln(y) transformation. -->
+```
 
-<!-- ```{r} -->
-<!-- data$Weight <-sqrt(data$Weight)  -->
+The variance is fairly constant. Before the transormation, there was a defnitie pattern that would lead us to conclude non-constant variance. **3. The error term $\epsilon$ has constant variance $\sigma^{2}$.** is satisfied.
 
-<!-- par(mfrow=c(2,2)) -->
-<!-- plot(data$Length1,data$Weight) -->
-<!-- plot(data$Width,data$Weight) -->
-<!-- plot(data$Height,data$Weight) -->
+## Residuals vs. Leverage
 
-<!-- ``` -->
+```{r}
 
+plot(model_transformed, which = 5)
+
+```
 
 
