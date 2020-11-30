@@ -1,0 +1,15 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Model Validation
+
+_**The goal in Model Validation is to evaluate the quality of the predictions the model generates. This is performed through cross validation**_
+
+```{r}
+
+data <- read.csv("cleaned_data_5.csv", fileEncoding="UTF-8-BOM")
+
+```
+

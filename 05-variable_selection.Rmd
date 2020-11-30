@@ -65,4 +65,14 @@ vif(model_reduced)
 
 ```
 
-However, one of the main issues that multicollinearity causes is reduced statistical significance of the predictor. Clearly multicollinearity isn't causing problems since all the predictors in the model are significant. It should be fine to leave the model as is. The final model seems to be good. In the end, the model has been reduced to a reasonable number of predictors while still maintaining its strong explanitory power.
+However, one of the main issues that multicollinearity causes is reduced statistical significance of the predictor. Clearly multicollinearity isn't causing problems since all the predictors in the model are significant. It should be fine to leave the model as is. The final model seems to be good. In the end, the model has been reduced to a reasonable number of predictors while still maintaining its strong explanatory power.
+
+```{r}
+
+data$Species_Parkki <- NULL
+data$Species_Perch <- NULL
+data$Species_Roach <- NULL
+
+write.csv(data, 'cleaned_data_5.csv', row.names = FALSE)
+
+```
