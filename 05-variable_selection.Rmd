@@ -1,0 +1,68 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Variable Selection
+
+_**Variable selection is a balance between making the model as realistic as possible (include as many regressors as possible) and as simple as possible (including only the variables needed). Forward Selection will be implemented using p-values with a critical value of $\alpha=0.05$. All selection criterion will be considered.**_
+
+```{r}
+
+library('olsrr')
+library(faraway)
+data <- read.csv("cleaned_data_4.csv", fileEncoding="UTF-8-BOM")
+
+```
+
+The forward selection function requires the model and a set p-value.
+
+```{r}
+
+model <- lm(Weight ~ ., data = data)
+FWDfit_p <- ols_step_forward_p(model, penter=0.05)
+FWDfit_p
+
+```
+
+The forward selection builds up from no variables in the model. A predictor is added to the model at each iteration based on whether it has the lowest p-value. This continues until there are no more predictors to add, or all the remaining variables have a p-value > 0.05. In this case all selection criteria confirm that Width, Length1, Height, Species_Pike, Species_Smelt, and Species_Whitefish are included in the best model.
+
+```{r}
+
+model <- lm(Weight ~ 
+            Width + 
+            Length1 + 
+            Height + 
+            Species_Pike + 
+            Species_Smelt + 
+            Species_Whitefish , 
+            data = data)
+
+summary(model)
+
+```
+
+We can go back and see that the VIF is roughly the same as it was before the residual analysis and model selection process. 
+
+```{r}
+
+vif(model)
+
+```
+
+Width and Length1 still have high VIF. By removing one, we can see that the VIF's improve. 
+
+```{r}
+
+model_reduced <- lm(Weight ~ 
+            Length1 + 
+            Height + 
+            Species_Pike + 
+            Species_Smelt + 
+            Species_Whitefish , 
+            data = data)
+vif(model_reduced)
+
+```
+
+However, one of the main issues that multicollinearity causes is reduced statistical significance of the predictor. Clearly multicollinearity isn't causing problems since all the predictors in the model are significant. It should be fine to leave the model as is. The final model seems to be good. In the end, the model has been reduced to a reasonable number of predictors while still maintaining its strong explanitory power.

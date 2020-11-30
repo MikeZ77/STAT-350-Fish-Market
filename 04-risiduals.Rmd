@@ -14,6 +14,7 @@ _**Five important assumptions need to hold so that the regression model can be u
 5. The errors are normally distributed.
 
 ```{r}
+
 data <- read.csv("cleaned_data_3.csv", fileEncoding="UTF-8-BOM")
 
 ```
@@ -22,10 +23,21 @@ Lets use the risidual plots using standardized residuals so that we can compare 
 
 ```{r}
 
-model <- lm(Weight ~ . - 1, data = data)
+model <- lm(Weight ~ ., data = data)
 
 par(mfrow = c(2, 2))
 plot(model)
+
+```
+
+## Addressing Outliers
+
+Observation 1 (the unique data point we added) immediately strikes us as having a huge risidual that makes it an outliar from all other data points. It also has significant leverage, pulling the linear regression line away from the best fit for the other data points. In this case, the fish Weight is disproportionately large from its other attributes like Height and Length. There are many possible causes for this (a faulty measurement scale, a fisherman disproportionately inflating the weight to get a better price, simple data entry error, or even the fish swallowing some object). However, since we have seen how consistent the proportionality of fish dimensions is to weight, it is almost impossible that this could be a legitimate observation. For this reason, removing the observation is justified.  
+
+```{r}
+
+data <- data[-c(1),]
+model <- lm(Weight ~ ., data = data)
 
 ```
 
@@ -35,7 +47,7 @@ Here, assumption **1. The relationship between the response y and the regression
 
 ```{r}
 
-model_transformed <- lm(sqrt(Weight) ~ . - 1, data = data)
+model_transformed <- lm(sqrt(Weight) ~ ., data = data)
 
 plot(model_transformed, which = 1)
 
@@ -45,23 +57,13 @@ Taking the square root of the response seems to produce the best result compared
 
 ```{r}
 
-model <- lm(Weight ~ . - 1, data = data)
+model <- lm(Weight ~ ., data = data)
 summary(model)
 summary(model_transformed)
 
 ```
 
-Performing this transformation has significantly improved the $R^{2}$ of the model from `r {summary(model)$r.squared}` to `r {summary(model_transformed)$r.squared}`. Note that after the transformation we get NA values for Species_Parkki, Species_Roach, and Species_Smelt. Given the $R^{2}$ value after the transformation, it is the case that these variables are predicted perfectly by another (co-linear), and as a result add no value to the model. At this stage these predictors can be removed.
-
-```{r}
-
-data$Species_Parkki <- NULL
-data$Species_Roach <- NULL
-data$Species_Smelt <- NULL
-
-```
-
-Overall, we can see that **1. The relationship between the response y and the regression is linear** and **2. The error term $\epsilon$ has zero mean.** have been satisfied.
+Performing this transformation has significantly improved the $R^{2}$ of the model from `r {summary(model)$r.squared}` to `r {summary(model_transformed)$r.squared}`. Overall, we can see that **1. The relationship between the response y and the regression is linear** and **2. The error term $\epsilon$ has zero mean.** have been satisfied.
 
 ## Normal Q-Q
 
@@ -71,7 +73,7 @@ plot(model_transformed, which = 2)
 
 ```
 
-The normality assumption is is adequately met after the transformation. That is **5. The errors are normally distributed**. Previously, you can see that the data was not normal and havily skewed to the right.
+The normality assumption is is adequately met after the transformation. The majority of the data follows an  x=y diagonal line from +/-2 SD. The one negative result of the square root transformation is that the risidual of observation 15 was magnified. We can see later whether this is a cause for concern based on its Cook's D value. Overall, **5. The errors are normally distributed** is satisfied.
 
 ## Scale-Location
 
@@ -81,13 +83,37 @@ plot(model_transformed, which = 3)
 
 ```
 
-The variance is fairly constant. Before the transormation, there was a defnitie pattern that would lead us to conclude non-constant variance. **3. The error term $\epsilon$ has constant variance $\sigma^{2}$.** is satisfied.
+The variance is fairly constant. Before the transormation, there was a definite pattern that would lead us to conclude non-constant variance. **3. The error term $\epsilon$ has constant variance $\sigma^{2}$.** is satisfied.
 
 ## Residuals vs. Leverage
 
 ```{r}
 
 plot(model_transformed, which = 5)
+
+```
+
+Observation 1 was an influential observation negatively impacting the explanatory power of the model. Since it was deemed to be invalid, it was removed. While observation 15 is an outlier, it does not carry much leverage over the regression and should be fine to leave in. It is notable that there are a few observations which exhibit significantly more leverage. However, their Cook's distance still suggest that they are not influential.
+
+## Residual vs. Index
+
+```{r}
+
+plot(model_transformed$residuals)
+
+```
+
+The Risidual vs. Index plot shows the observations index on the x-axis and its risidual on the y-axis. We want a random scattering of residuals around $\epsilon=0$ (i.e. no correlation of the errors). we can clearly see that this is the case, so **4. The errors are uncorrelated.** is satisfied.
+
+
+## Conclusion
+
+Our model fully satisfies all linear regression assumptions, and almost fully explains the variance `r {summary(model_transformed)$r.squared}`. Although little in explanatory power can be gained from a model selection process, it will be conducted for completeness.  
+
+```{r}
+
+data <- transform(data, Weight = sqrt(Weight))
+write.csv(data, 'cleaned_data_4.csv', row.names = FALSE)
 
 ```
 

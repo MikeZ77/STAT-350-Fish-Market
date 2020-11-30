@@ -16,7 +16,13 @@ A datapoint can be introduced which is an outlier and has high leverage. The rea
 
  ```{r}
 
-data <- rbind(data.frame(Species = 'Perch', Weight = 2000, Length1= 40.9, Length2 = 41.2, Length3 = 40.8, Height = 13.11, Width = 8.2), data)
+data <- rbind(data.frame(Species = 'Perch', 
+                        Weight = 2400, 
+                        Length1= 47.9, 
+                        Length2 = 46.2, 
+                        Length3 = 45.8, 
+                        Height = 17.11, 
+                        Width = 8.2), data)
 
 ```
 
@@ -69,7 +75,9 @@ Combine the scaled and indicator data.
 
  ```{r}
  
-data <- data.frame(indicator_data, scaled_data)
+scaled_data <- data.frame(indicator_data, scaled_data)
+data <- data.frame(indicator_data, data)
+data$Species <- NULL
 
 ```
 
@@ -78,7 +86,7 @@ Output the new dataframe as a .csv so it can be used in the regression analysis.
  ```{r}
  
 write.csv(data, 'cleaned_data_2.csv', row.names = FALSE)
-write.csv(scaled_data, 'cleaned_data_scaled_only_2.csv', row.names = FALSE)
+write.csv(scaled_data, 'cleaned_data_scaled_2.csv', row.names = FALSE)
 
 ```
 

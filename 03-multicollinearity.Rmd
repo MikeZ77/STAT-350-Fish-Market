@@ -10,8 +10,8 @@ _**Multicollinearity  is defined as linear or near linear dependence between pre
 ```{r}
 library(faraway)
 
-data <- read.csv("cleaned_data_2.csv", fileEncoding="UTF-8-BOM")
-data1 <- read.csv("cleaned_data_scaled_only_2.csv", fileEncoding="UTF-8-BOM")
+data1 <- read.csv("cleaned_data_2.csv", fileEncoding="UTF-8-BOM")
+data <- read.csv("cleaned_data_scaled_2.csv", fileEncoding="UTF-8-BOM")
 
 ```
 
@@ -54,6 +54,6 @@ We can see that removing these predictors has fixed the major issues multicollin
 data1$Length2 <- NULL
 data1$Length3 <- NULL
 
-write.csv(data, 'cleaned_data_3.csv', row.names = FALSE)
-write.csv(data1, 'cleaned_data_scaled_only_3.csv', row.names = FALSE)
+write.csv(data1, 'cleaned_data_3.csv', row.names = FALSE)
+write.csv(data, 'cleaned_data_scaled_3.csv', row.names = FALSE)
 ```
