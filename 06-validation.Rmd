@@ -5,11 +5,122 @@ output:
 ---
 # Model Validation
 
-_**The goal in Model Validation is to evaluate the quality of the predictions the model generates. This is performed through cross validation**_
+_**The goal in Model Validation is to evaluate the quality of the predictions the model generates (the model's performance). This is performed through cross validation. The model's adequacy has already been established through the residual analysis.**_
 
 ```{r}
 
+library(caret)
 data <- read.csv("cleaned_data_5.csv", fileEncoding="UTF-8-BOM")
 
+
+model <- lm(Weight ~ 
+            Width + 
+            Length1 + 
+            Height + 
+            Species_Pike + 
+            Species_Smelt + 
+            Species_Whitefish , 
+            data = data)
+
+summary(model)
+
 ```
+This is the model determined to be the best through variable selection.
+
+
+```{r}
+
+set.seed(101)
+n_train <- ceiling(0.8 * length(data$Weight))
+train_sample <- sample(c(1:length(data$Weight)), n_train)
+train_data <- data[train_sample, ]
+test_data <- data[-train_sample, ]
+
+
+```
+
+This randomly splits the data set into a traing data set and a testing data set. To measure the performance of the model and the quality of its predictions, cross validation is used. This involves fitting fitting the model using the training data, and using this model to predict the responses on the test set.
+
+```{r}
+
+
+model <- lm(Weight ~ 
+            Width + 
+            Length1 + 
+            Height + 
+            Species_Pike + 
+            Species_Smelt + 
+            Species_Whitefish , 
+            data = train_data)
+
+summary(model)
+
+predictions <- predict(model, test_data)
+
+R_sq <- R2(predictions, test_data$Weight)
+RMSE <- RMSE(predictions, test_data$Weight)
+MAE <- MAE(predictions, test_data$Weight)
+
+print(c(R_sq, RMSE, MAE))
+
+```
+
+The quality of the predictions is about the same using the test data. The root mean square error (RMSE) and mean absolute error (MAE) should be small on a well performing model. To give context to these values, we can divide RMSE by the mean of the response variable to give a prediction error rate.
+
+```{r}
+
+pred_error <- RMSE / mean(test_data$Weight)
+pred_error
+
+```
+
+This means that there is only a `r pred_error` error on average (in the unit of measure weight is). Since the data set is not huge, there could be a risk that observations with a large absolute value could have all been partitioned exclusively to the test or training set (creating bias). Even though the prediction error is low, we have no basis of comparison.
+
+```{r}
+
+R_sq <- 0
+RMSE <- 0
+MAE <- 0
+
+for(i in 1:20){
+  
+  n_train <- ceiling(0.8 * length(data$Weight))
+  train_sample <- sample(c(1:length(data$Weight)), n_train)
+  train_data <- data[train_sample, ]
+  test_data <- data[-train_sample, ]
+  
+  
+  model <- lm(Weight ~ 
+              Width + 
+              Length1 + 
+              Height + 
+              Species_Pike + 
+              Species_Smelt + 
+              Species_Whitefish , 
+              data = train_data)
+  
+  summary(model)
+  
+  predictions <- predict(model, test_data)
+  
+  R_sq <- R_sq + R2(predictions, test_data$Weight)
+  RMSE <- RMSE + RMSE(predictions, test_data$Weight)
+  MAE <- MAE + MAE(predictions, test_data$Weight)
+  
+}
+
+R_sq = R_sq / 20
+RMSE = RMSE / 20
+MAE = MAE / 20
+
+print(c(R_sq, RMSE, MAE))
+
+```
+
+The average of $R^{2}$, RMSE, and MAE is almost the same as what was initially computed. This shows that the inital cross validation was not a one off. 
+
+
+
+
+
 
