@@ -10,3 +10,6 @@ Run in the order:
 03-multicollinearity.Rmd
 04-risiduals.Rmd
 05-variable_selection.Rmd 
+06-validation.Rmd
+
+The final report (includes R Markdown) is located in the "Final Report" directory.
