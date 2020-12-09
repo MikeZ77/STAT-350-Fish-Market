@@ -1,9 +1,10 @@
 # STAT-350-Fish-Market
+# Student: Michael Zaghi
 Linear regression analysis and report for CMPT 350.
 
 Each .Rmd (R Markdown script) produces an updated .csv which is used in the next step of the analysis.
 
-Run in the order:
+To reproduce results, run in the order:
 
 ```
 01-descriptive.Rmd
